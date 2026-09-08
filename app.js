@@ -7,7 +7,7 @@ const SUITS = [
   { symbol: "♣", name: "Tep", rank: 1, color: "black" },
 ];
 const COLORS = ["#f7c955", "#8ce3ca", "#fa8c66", "#a7c9ff", "#e1a8f1", "#8ecf81", "#ffd59a", "#a4dfdd", "#e7a2a8", "#b8b5fc"];
-const BUILD_VERSION = "v0.6.0 - lobby-any-2-to-10";
+const BUILD_VERSION = "v0.6.1 - create-room-feedback";
 const el = (id) => document.getElementById(id);
 // A tab-scoped identity keeps separate test tabs from being treated as one player.
 const playerId = sessionStorage.getItem("ba-cay-player-id") || crypto.randomUUID();
