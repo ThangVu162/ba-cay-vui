@@ -65,11 +65,22 @@ async function createRoom(event) {
   const name = el("playerName").value.trim().slice(0, 18);
   if (!name) return setIntroMessage("Nhap ten truoc khi tao phong nhe.");
   const code = makeRoomCode();
-  await set(ref(db, `rooms/${code}`), {
-    hostId: playerId, maxPlayers: 10, phase: "waiting", turn: 1, round: 1, createdAt: Date.now(),
-    players: { [playerId]: { name, score: 0, wins: 0, joinedAt: Date.now() } },
-  });
-  location.hash = code;
+  const button = el("createButton");
+  button.disabled = true;
+  button.textContent = "Dang tao phong...";
+  try {
+    await set(ref(db, `rooms/${code}`), {
+      hostId: playerId, maxPlayers: 10, phase: "waiting", turn: 1, round: 1, createdAt: Date.now(),
+      players: { [playerId]: { name, score: 0, wins: 0, joinedAt: Date.now() } },
+    });
+    state.roomCode = code;
+    location.hash = code;
+    connectToRoom();
+  } catch (error) {
+    button.disabled = false;
+    button.innerHTML = "Tao phong <span>→</span>";
+    setIntroMessage(`Khong tao duoc phong: ${error.code || "loi ket noi Firebase"}. Kiem tra tab Rules cua Realtime Database.`);
+  }
 }
 
 async function joinRoom(event) {
@@ -247,7 +258,11 @@ function initialise() {
 
 function connectToRoom() {
   if (!isFirebaseConfigured || !state.roomCode) return;
-  onValue(ref(db, `rooms/${state.roomCode}`), (snapshot) => renderRoom(snapshot.val()));
+  onValue(
+    ref(db, `rooms/${state.roomCode}`),
+    (snapshot) => renderRoom(snapshot.val()),
+    (error) => setIntroMessage(`Khong doc duoc phong: ${error.code || "loi Firebase"}. Kiem tra Rules.`),
+  );
 }
 
 el("createForm").addEventListener("submit", createRoom);
