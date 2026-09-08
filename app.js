@@ -8,8 +8,9 @@ const SUITS = [
 ];
 const COLORS = ["#f7c955", "#8ce3ca", "#fa8c66", "#a7c9ff", "#e1a8f1", "#8ecf81", "#ffd59a", "#a4dfdd", "#e7a2a8", "#b8b5fc"];
 const el = (id) => document.getElementById(id);
-const playerId = localStorage.getItem("ba-cay-player-id") || crypto.randomUUID();
-localStorage.setItem("ba-cay-player-id", playerId);
+// A tab-scoped identity keeps separate test tabs from being treated as one player.
+const playerId = sessionStorage.getItem("ba-cay-player-id") || crypto.randomUUID();
+sessionStorage.setItem("ba-cay-player-id", playerId);
 
 const state = { room: null, roomCode: location.hash.replace("#", "").toUpperCase(), resolving: false };
 
