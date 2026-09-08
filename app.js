@@ -238,8 +238,13 @@ function initialise() {
   if (state.roomCode) {
     el("formTitle").textContent = `Vao phong ${state.roomCode}`;
     el("playerCountWrap").classList.add("hidden"); el("createButton").classList.add("hidden"); el("joinButton").classList.remove("hidden");
-    if (isFirebaseConfigured) onValue(ref(db, `rooms/${state.roomCode}`), (snapshot) => renderRoom(snapshot.val()));
+    connectToRoom();
   }
+}
+
+function connectToRoom() {
+  if (!isFirebaseConfigured || !state.roomCode) return;
+  onValue(ref(db, `rooms/${state.roomCode}`), (snapshot) => renderRoom(snapshot.val()));
 }
 
 el("createForm").addEventListener("submit", createRoom);
@@ -247,4 +252,5 @@ el("joinButton").addEventListener("click", joinRoom);
 el("startButton").addEventListener("click", startRoom);
 el("copyLink").addEventListener("click", copyLink);
 el("resetButton").addEventListener("click", () => { location.hash = ""; location.reload(); });
+window.addEventListener("hashchange", () => { state.roomCode = location.hash.replace("#", "").toUpperCase(); initialise(); });
 initialise();
