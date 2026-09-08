@@ -1,8 +1,6 @@
 # 3 cay vui
 
-Demo web mot phong bai 3 cay de choi vui trong cong ty.
-
-Mo `index.html` bang trinh duyet de choi. Khong can cai dat hay backend.
+Game 3 cay realtime choi vui trong cong ty. Chu phong tao link, moi nguoi vao phong cho, va chi bat dau khi du nguoi.
 
 ## Luat demo
 
@@ -13,5 +11,12 @@ Mo `index.html` bang trinh duyet de choi. Khong can cai dat hay backend.
 - Moi luot co so van bang so nguoi choi.
 - Ket thuc luot: diem = `60 x (so van thang - 1)`.
 
-Day la ban mo phong trong mot trinh duyet. De nhieu nguoi cung vao mot phong qua link, can bo sung backend realtime (Firebase hoac Supabase) o buoc tiep theo.
-# ba-cay-vui
+## Ket noi Firebase
+
+1. Tao Firebase project va them mot Web App.
+2. Trong Firebase Console, tao **Realtime Database**. Luu y URL database phai co trong Web config.
+3. Sao chep Web config vao `firebase-config.js`, thay `firebaseConfig = null` bang object Firebase cung cap.
+4. Trong tab Rules cua Realtime Database, dan noi dung `database.rules.json` va Publish.
+5. Commit va day cac file moi len GitHub. GitHub Pages tu dong phuc vu ban moi.
+
+Rules hien tai la public read/write de anh em vao phong khong can dang ky. Chi phu hop game vui, khong dung tien that. Neu mo rong, hay them Firebase Authentication va Cloud Functions de server tu chia bai va ap dung rules an toan hon.

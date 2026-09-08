@@ -15,19 +15,19 @@
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="#"><span class="brand-mark">3</span><span>cay<span class="brand-dot">.</span>vui</span></a>
-        <div class="room-code"><span class="status-dot"></span> PHONG <strong id="roomCode">ANH-EM</strong></div>
+        <div class="room-code"><span class="status-dot"></span> PHONG <strong id="roomCode">MOI</strong></div>
         <button class="quiet-button" id="resetButton" type="button">Choi lai tu dau</button>
       </header>
 
       <section class="intro" id="intro">
         <p class="eyebrow">KHONG AN TIEN, CHI ANH EM</p>
         <h1>Mot ban bai nho.<br /><em>Mot tran cuoi to.</em></h1>
-        <p class="intro-copy">Chia 3 cay, so diem, xem ai may man nhat phong. Moi luot co dung so van bang so nguoi choi.</p>
-        <form class="join-card" id="joinForm">
-          <label for="playerName">Ten cua ban</label>
+        <p class="intro-copy">Tao mot phong, gui link cho anh em va cho du nguoi truoc khi bat dau. Moi luot co dung so van bang so nguoi choi.</p>
+        <form class="join-card" id="createForm">
+          <label id="formTitle" for="playerName">Ten cua ban</label>
           <div class="join-fields">
             <input id="playerName" maxlength="18" value="Minh" autocomplete="nickname" />
-            <label class="people-select" for="playerCount">So nguoi
+            <label class="people-select" id="playerCountWrap" for="playerCount">So nguoi
               <select id="playerCount">
                 <option value="3">3 nguoi</option>
                 <option value="4">4 nguoi</option>
@@ -39,11 +39,25 @@
                 <option value="10">10 nguoi</option>
               </select>
             </label>
-            <button class="primary-button" type="submit">Vao ban <span>→</span></button>
+            <button class="primary-button" id="createButton" type="submit">Tao phong <span>→</span></button>
+            <button class="primary-button hidden" id="joinButton" type="button">Vao phong <span>→</span></button>
           </div>
-          <p class="form-note">Demo tai mot trinh duyet. Ban online realtime se noi backend o buoc tiep theo.</p>
+          <p class="form-note" id="introMessage">Phong choi realtime toi da 10 nguoi. Chu phong chi bat dau khi phong da du nguoi.</p>
         </form>
+        <p class="firebase-warning hidden" id="firebaseWarning">Firebase chua duoc ket noi. Xem README de them cau hinh project.</p>
         <div class="rule-strip"><span>Sanh dong chat &gt; Bo ba &gt; Diem</span><span>Hang don vi 0 tinh la 10</span><span>Ro &gt; Co &gt; Bich &gt; Tep</span></div>
+      </section>
+
+      <section class="lobby hidden" id="lobby">
+        <p class="eyebrow">PHONG CHO</p>
+        <h2 id="lobbyTitle">Phong</h2>
+        <p class="lobby-count" id="lobbyCount"></p>
+        <div class="lobby-card">
+          <ol id="lobbyPlayers"></ol>
+          <p id="lobbyNotice"></p>
+          <div class="share-row"><input id="shareLink" readonly /><button type="button" id="copyLink">Copy link</button></div>
+          <button class="primary-button" id="startButton" type="button">Bat dau choi  ↗</button>
+        </div>
       </section>
 
       <section class="game hidden" id="game">
@@ -85,6 +99,6 @@
         <div class="hand-result"></div>
       </article>
     </template>
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
