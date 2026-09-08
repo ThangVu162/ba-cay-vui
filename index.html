@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ba Cay | Phong choi vui</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#"><span class="brand-mark">3</span><span>cay<span class="brand-dot">.</span>vui</span></a>
+        <div class="room-code"><span class="status-dot"></span> PHONG <strong id="roomCode">ANH-EM</strong></div>
+        <button class="quiet-button" id="resetButton" type="button">Choi lai tu dau</button>
+      </header>
+
+      <section class="intro" id="intro">
+        <p class="eyebrow">KHONG AN TIEN, CHI ANH EM</p>
+        <h1>Mot ban bai nho.<br /><em>Mot tran cuoi to.</em></h1>
+        <p class="intro-copy">Chia 3 cay, so diem, xem ai may man nhat phong. Moi luot co dung so van bang so nguoi choi.</p>
+        <form class="join-card" id="joinForm">
+          <label for="playerName">Ten cua ban</label>
+          <div class="join-fields">
+            <input id="playerName" maxlength="18" value="Minh" autocomplete="nickname" />
+            <label class="people-select" for="playerCount">So nguoi
+              <select id="playerCount">
+                <option value="3">3 nguoi</option>
+                <option value="4">4 nguoi</option>
+                <option value="5">5 nguoi</option>
+                <option value="6" selected>6 nguoi</option>
+                <option value="7">7 nguoi</option>
+                <option value="8">8 nguoi</option>
+                <option value="9">9 nguoi</option>
+                <option value="10">10 nguoi</option>
+              </select>
+            </label>
+            <button class="primary-button" type="submit">Vao ban <span>→</span></button>
+          </div>
+          <p class="form-note">Demo tai mot trinh duyet. Ban online realtime se noi backend o buoc tiep theo.</p>
+        </form>
+        <div class="rule-strip"><span>Sanh dong chat &gt; Bo ba &gt; Diem</span><span>Hang don vi 0 tinh la 10</span><span>Ro &gt; Co &gt; Bich &gt; Tep</span></div>
+      </section>
+
+      <section class="game hidden" id="game">
+        <div class="game-heading">
+          <div>
+            <p class="eyebrow" id="roundLabel">LUOT 1 · VAN 1 / 6</p>
+            <h2 id="gameTitle">San sang chia bai?</h2>
+          </div>
+          <div class="round-progress" id="roundProgress" aria-label="Tien do van"></div>
+        </div>
+
+        <div class="game-layout">
+          <section class="table-section">
+            <div class="table-felt">
+              <div class="felt-label">BA CAY VUI</div>
+              <div class="deck" aria-hidden="true"><i></i><i></i><b>3</b></div>
+              <div class="players-grid" id="playersGrid"></div>
+              <div class="table-message" id="tableMessage">Tat ca da vao ban. Chu phong chia bai nhe!</div>
+            </div>
+            <div class="action-row">
+              <button class="deal-button" id="dealButton" type="button">Chia bai <span>↗</span></button>
+              <p id="actionHint">Moi nguoi nhan 3 cay bai up.</p>
+            </div>
+          </section>
+
+          <aside class="scoreboard">
+            <div class="scoreboard-header"><div><p class="eyebrow">BANG XEP HANG</p><h3>Diem tong</h3></div><span class="score-badge">+/- 60</span></div>
+            <ol id="scoreboardList"></ol>
+            <p class="score-legend">0 thang: −60 · 1 thang: 0 · moi van thang them: +60</p>
+          </aside>
+        </div>
+        <section class="result-panel hidden" id="resultPanel"></section>
+      </section>
+    </main>
+    <template id="playerTemplate">
+      <article class="player-seat">
+        <div class="player-meta"><span class="avatar"></span><span class="player-name"></span><span class="win-count">0 thang</span></div>
+        <div class="cards"></div>
+        <div class="hand-result"></div>
+      </article>
+    </template>
+    <script src="app.js"></script>
+  </body>
+</html>
