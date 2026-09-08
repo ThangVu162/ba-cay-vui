@@ -7,6 +7,7 @@ const SUITS = [
   { symbol: "♣", name: "Tep", rank: 1, color: "black" },
 ];
 const COLORS = ["#f7c955", "#8ce3ca", "#fa8c66", "#a7c9ff", "#e1a8f1", "#8ecf81", "#ffd59a", "#a4dfdd", "#e7a2a8", "#b8b5fc"];
+const BUILD_VERSION = "v0.6.0 - lobby-any-2-to-10";
 const el = (id) => document.getElementById(id);
 // A tab-scoped identity keeps separate test tabs from being treated as one player.
 const playerId = sessionStorage.getItem("ba-cay-player-id") || crypto.randomUUID();
@@ -64,9 +65,8 @@ async function createRoom(event) {
   const name = el("playerName").value.trim().slice(0, 18);
   if (!name) return setIntroMessage("Nhap ten truoc khi tao phong nhe.");
   const code = makeRoomCode();
-  const maxPlayers = Number(el("playerCount").value);
   await set(ref(db, `rooms/${code}`), {
-    hostId: playerId, maxPlayers, phase: "waiting", turn: 1, round: 1, createdAt: Date.now(),
+    hostId: playerId, maxPlayers: 10, phase: "waiting", turn: 1, round: 1, createdAt: Date.now(),
     players: { [playerId]: { name, score: 0, wins: 0, joinedAt: Date.now() } },
   });
   location.hash = code;
@@ -89,8 +89,9 @@ async function joinRoom(event) {
 
 async function startRoom() {
   await runTransaction(ref(db, `rooms/${state.roomCode}`), (room) => {
-    if (!room || room.hostId !== playerId || room.phase !== "waiting" || Object.keys(room.players || {}).length !== room.maxPlayers) return;
-    return { ...room, phase: "playing" };
+    const playerCount = Object.keys(room?.players || {}).length;
+    if (!room || room.hostId !== playerId || room.phase !== "waiting" || playerCount < 2 || playerCount > 10) return;
+    return { ...room, playerCount, phase: "playing" };
   });
 }
 
@@ -117,7 +118,7 @@ async function resolveRound() {
     players.slice(1).forEach((player) => { if (compareHands(current.hands[player.id], current.hands[best.id]) > 0) best = player; });
     const winnerIds = players.filter((player) => compareHands(current.hands[player.id], current.hands[best.id]) === 0).map((player) => player.id);
     winnerIds.forEach((id) => { current.players[id].wins += 1; });
-    const isTurnOver = current.round === current.maxPlayers;
+    const isTurnOver = current.round === (current.playerCount || Object.keys(current.players).length);
     if (isTurnOver) Object.values(current.players).forEach((player) => { player.score += 60 * (player.wins - 1); });
     return { ...current, phase: isTurnOver ? "turn-result" : "round-result", winnerIds };
   });
@@ -156,14 +157,14 @@ function renderLobby(room) {
   el("game").classList.add("hidden");
   el("lobby").classList.remove("hidden");
   el("lobbyTitle").textContent = `Phong ${state.roomCode}`;
-  el("lobbyCount").textContent = `${players.length} / ${room.maxPlayers} nguoi da vao`;
+  el("lobbyCount").textContent = `${players.length} / 10 nguoi da vao`;
   el("lobbyPlayers").innerHTML = players.map((player, index) => `<li><span class="avatar" style="--avatar:${COLORS[index]}">${player.name.slice(0, 1).toUpperCase()}</span><strong>${escapeHtml(player.name)}</strong>${player.id === room.hostId ? "<small>CHU PHONG</small>" : ""}</li>`).join("");
   el("shareLink").value = location.href;
-  const ready = players.length === room.maxPlayers;
+  const ready = players.length >= 2;
   el("startButton").classList.toggle("hidden", !host);
   el("startButton").disabled = !ready;
-  el("startButton").textContent = ready ? "Bat dau choi  ↗" : `Cho du ${room.maxPlayers - players.length} nguoi`;
-  el("lobbyNotice").textContent = host ? (ready ? "Da du nguoi. Ban co the bat dau!" : "Gui link nay cho anh em. Chu phong se bat dau khi phong du nguoi.") : "Da vao phong. Cho chu phong bat dau nhe!";
+  el("startButton").textContent = ready ? `Bat dau voi ${players.length} nguoi  ↗` : "Can it nhat 2 nguoi";
+  el("lobbyNotice").textContent = host ? (ready ? `Da co ${players.length} nguoi. Bat dau se choi ${players.length} van moi luot.` : "Gui link nay cho anh em. Phong can it nhat 2 nguoi de bat dau.") : "Da vao phong. Cho chu phong bat dau nhe!";
 }
 
 function renderGame(room) {
@@ -171,10 +172,11 @@ function renderGame(room) {
   const hands = room.hands;
   const winnerIds = room.winnerIds || [];
   const isHost = room.hostId === playerId;
+  const gamePlayerCount = room.playerCount || players.length;
   el("resultPanel").classList.add("hidden");
-  el("roundLabel").textContent = `LUOT ${room.turn} · VAN ${room.round} / ${room.maxPlayers}`;
+  el("roundLabel").textContent = `LUOT ${room.turn} · VAN ${room.round} / ${gamePlayerCount}`;
   el("gameTitle").textContent = room.phase === "revealing" ? "Bai dang mo..." : room.phase === "turn-result" ? "Ket thuc luot!" : "San sang chia bai?";
-  el("roundProgress").innerHTML = Array.from({ length: room.maxPlayers }, (_, index) => `<span class="${index + 1 < room.round ? "complete" : index + 1 === room.round ? "current" : ""}"></span>`).join("");
+  el("roundProgress").innerHTML = Array.from({ length: gamePlayerCount }, (_, index) => `<span class="${index + 1 < room.round ? "complete" : index + 1 === room.round ? "current" : ""}"></span>`).join("");
   renderPlayers(players, hands, winnerIds, room.phase !== "playing");
   renderScores(players);
   const button = el("dealButton");
@@ -193,7 +195,7 @@ function renderGame(room) {
     el("tableMessage").textContent = `${winnerNames} thang van nay voi ${bestHand ? handSummary(evaluateHand(bestHand)) : "bai cao"}!`;
     if (room.phase === "round-result") {
       button.textContent = "Van tiep theo  ↗"; button.onclick = nextRound;
-      el("actionHint").textContent = `Con ${room.maxPlayers - room.round} van trong luot nay.`;
+      el("actionHint").textContent = `Con ${gamePlayerCount - room.round} van trong luot nay.`;
     } else {
       el("resultPanel").innerHTML = `<p class="eyebrow">KET THUC LUOT ${room.turn}</p><h3>Bang diem da duoc cap nhat</h3><p>Chu phong co the bat dau luot moi khi moi nguoi san sang.</p>${isHost ? '<button type="button" id="nextTurn">Bat dau luot tiep theo</button>' : ""}`;
       el("resultPanel").classList.remove("hidden");
@@ -238,7 +240,7 @@ function initialise() {
   if (!isFirebaseConfigured) el("firebaseWarning").classList.remove("hidden");
   if (state.roomCode) {
     el("formTitle").textContent = `Vao phong ${state.roomCode}`;
-    el("playerCountWrap").classList.add("hidden"); el("createButton").classList.add("hidden"); el("joinButton").classList.remove("hidden");
+    el("createButton").classList.add("hidden"); el("joinButton").classList.remove("hidden");
     connectToRoom();
   }
 }
@@ -254,4 +256,5 @@ el("startButton").addEventListener("click", startRoom);
 el("copyLink").addEventListener("click", copyLink);
 el("resetButton").addEventListener("click", () => { location.hash = ""; location.reload(); });
 window.addEventListener("hashchange", () => { state.roomCode = location.hash.replace("#", "").toUpperCase(); initialise(); });
+el("debugVersion").textContent = BUILD_VERSION;
 initialise();

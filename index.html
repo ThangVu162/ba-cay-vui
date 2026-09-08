@@ -16,6 +16,7 @@
       <header class="topbar">
         <a class="brand" href="#"><span class="brand-mark">3</span><span>cay<span class="brand-dot">.</span>vui</span></a>
         <div class="room-code"><span class="status-dot"></span> PHONG <strong id="roomCode">MOI</strong></div>
+        <div class="debug-version">DEBUG BUILD <strong id="debugVersion">dang tai...</strong></div>
         <button class="quiet-button" id="resetButton" type="button">Choi lai tu dau</button>
       </header>
 
@@ -27,18 +28,6 @@
           <label id="formTitle" for="playerName">Ten cua ban</label>
           <div class="join-fields">
             <input id="playerName" maxlength="18" value="Minh" autocomplete="nickname" />
-            <label class="people-select" id="playerCountWrap" for="playerCount"><span>So nguoi</span>
-              <select id="playerCount">
-                <option value="3">3 nguoi</option>
-                <option value="4">4 nguoi</option>
-                <option value="5">5 nguoi</option>
-                <option value="6" selected>6 nguoi</option>
-                <option value="7">7 nguoi</option>
-                <option value="8">8 nguoi</option>
-                <option value="9">9 nguoi</option>
-                <option value="10">10 nguoi</option>
-              </select>
-            </label>
             <button class="primary-button" id="createButton" type="submit">Tao phong <span>→</span></button>
             <button class="primary-button hidden" id="joinButton" type="button">Vao phong <span>→</span></button>
           </div>
